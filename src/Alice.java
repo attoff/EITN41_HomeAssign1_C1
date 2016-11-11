@@ -37,6 +37,17 @@ public class Alice {
         return B;
     }
 
+    public int[][] returnRequestedLists(int[] bReq) {
+        int[][] list = new int[1000][4];
+        for (int i = 0; i < bReq.length; i++) {
+            list[i][0] = a[bReq[i]];
+            list[i][1] = c[bReq[i]];
+            list[i][2] = d[bReq[i]];
+            list[i][3]= r[bReq[i]];
+        }
+        return list;
+    }
+
     private void hashH() {
         for (int i = 0; i < a.length; i++) {
             x[i] = hashCodeH(a[i], c[i]);
