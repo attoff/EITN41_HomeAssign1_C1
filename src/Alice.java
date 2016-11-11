@@ -10,6 +10,7 @@ public class Alice {
     private int[] y;
     private int[] B;
     private int ID;
+    private int n;
 
     public Alice() {
         rand = new Random();
@@ -20,10 +21,11 @@ public class Alice {
         x = new int[2000];
         y = new int[2000];
         ID = 851212;
+        n = 15;
 
     }
 
-    public void generateNumber() {
+    public int[] generateNumber() {
         for (int i = 0; i < a.length; i++) {
             a[i] = rand.nextInt();
             c[i] = rand.nextInt();
@@ -32,6 +34,7 @@ public class Alice {
         }
         hashH();
         hashB();
+        return B;
     }
 
     private void hashH() {
@@ -43,7 +46,7 @@ public class Alice {
 
     private void hashB() {
         for (int i = 0; i < B.length; i++) {
-            B[i] = ((int) Math.pow(r[i], 3) * hashCodeF(x[i], y[i])) % 3;
+            B[i] = ((int) Math.pow(r[i], 3) * hashCodeF(x[i], y[i])) % n;
         }
 
     }
