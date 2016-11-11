@@ -11,6 +11,7 @@ public class Alice {
     private int[] B;
     private int ID;
     private int n;
+    private int[] used;
 
     public Alice() {
         rand = new Random();
@@ -21,6 +22,7 @@ public class Alice {
         x = new int[2000];
         y = new int[2000];
         ID = 851212;
+        used = new int[2000];
         n = 15;
 
     }
@@ -38,14 +40,29 @@ public class Alice {
     }
 
     public int[][] returnRequestedLists(int[] bReq) {
+        for (int i = 0; i < bReq.length; i++) {
+            used[bReq[i]] = 1;
+        }
         int[][] list = new int[1000][4];
         for (int i = 0; i < bReq.length; i++) {
             list[i][0] = a[bReq[i]];
             list[i][1] = c[bReq[i]];
             list[i][2] = d[bReq[i]];
-            list[i][3]= r[bReq[i]];
+            list[i][3] = r[bReq[i]];
         }
         return list;
+    }
+
+    public double recievedCoin(double bankCoin) {
+        double resR=1;
+        for (int i =0; i<used.length;i++) {
+            if (used[i] == 0) {
+                resR = resR *r[i];
+            }
+        }
+        double finalCoin = (bankCoin/resR)%n;
+
+            return finalCoin;
     }
 
     private void hashH() {
