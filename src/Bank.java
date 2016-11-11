@@ -4,7 +4,7 @@ public class Bank {
     private Random rand;
     private int[] selected;
     private int[] used;
-    private int[] B;
+    private long[] B;
     private int[] x;
     private int[] y;
     private int[] bCalc;
@@ -14,16 +14,17 @@ public class Bank {
     public Bank() {
         rand = new Random();
         selected = new int[1000];
-        B = new int[2000];
+        B = new long[2000];
         x = new int[1000];
         y = new int[1000];
+        used = new int[2000];
         bCalc = new int[1000];
         n = 15;
         ID = 851212;
     }
 
 
-    public int[] selectNumbers(int[] Bnew) {
+    public int[] selectNumbers(long[] Bnew) {
         for (int i = 0; i < Bnew.length; i++) {
             B[i] = Bnew[i];
         }
@@ -78,16 +79,16 @@ public class Bank {
 
 
     private int hashCodeH(int a, int b) {
-        int hash = 17;
-        hash = hash * 31 + a;
-        hash = hash * 31 + b;
+        int hash = 3;
+        hash = hash * 5 + a;
+        hash = hash * 5 + b;
         return hash;
     }
 
     private int hashCodeF(int a, int b) {
-        int hash = 13;
-        hash = hash * 17 + a;
-        hash = hash * 17 + b;
+        int hash = 1;
+        hash = hash * 7 + a;
+        hash = hash * 7 + b;
         return hash;
     }
 

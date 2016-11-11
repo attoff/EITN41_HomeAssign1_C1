@@ -8,7 +8,7 @@ public class Alice {
     private int[] r;
     private int[] x;
     private int[] y;
-    private int[] B;
+    private long[] B;
     private int ID;
     private int n;
     private int[] used;
@@ -21,13 +21,14 @@ public class Alice {
         r = new int[2000];
         x = new int[2000];
         y = new int[2000];
+        B = new long[2000];
         ID = 851212;
         used = new int[2000];
         n = 15;
 
     }
 
-    public int[] generateNumber() {
+    public long[] generateNumber() {
         for (int i = 0; i < a.length; i++) {
             a[i] = rand.nextInt();
             c[i] = rand.nextInt();
@@ -54,15 +55,15 @@ public class Alice {
     }
 
     public double recievedCoin(double bankCoin) {
-        double resR=1;
-        for (int i =0; i<used.length;i++) {
+        double resR = 1;
+        for (int i = 0; i < used.length; i++) {
             if (used[i] == 0) {
-                resR = resR *r[i];
+                resR = resR * r[i];
             }
         }
-        double finalCoin = (bankCoin/resR)%n;
+        double finalCoin = (bankCoin / resR) % n;
 
-            return finalCoin;
+        return finalCoin;
     }
 
     private void hashH() {
@@ -81,16 +82,16 @@ public class Alice {
 
 
     private int hashCodeH(int a, int b) {
-        int hash = 17;
-        hash = hash * 31 + a;
-        hash = hash * 31 + b;
+        int hash = 3;
+        hash = hash * 5 + a;
+        hash = hash * 5 + b;
         return hash;
     }
 
     private int hashCodeF(int a, int b) {
-        int hash = 13;
-        hash = hash * 17 + a;
-        hash = hash * 17 + b;
+        int hash = 1;
+        hash = hash * 7 + a;
+        hash = hash * 7 + b;
         return hash;
     }
 
