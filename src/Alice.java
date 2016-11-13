@@ -1,99 +1,103 @@
 import java.util.Random;
 
 public class Alice {
+    private long[][] acdr;
+    private long[][] requestedNumbers;
+    private long[] x;
+    private long[] y;
+    private double[] B;
+    private int[] selected;
     private Random rand;
-    private int[] a;
-    private int[] c;
-    private int[] d;
-    private int[] r;
-    private int[] x;
-    private int[] y;
-    private long[] B;
-    private int ID;
     private int n;
-    private int[] used;
+    private int ID;
+    private int bankVerificationKey;
+
 
     public Alice() {
         rand = new Random();
-        a = new int[2000];
-        c = new int[2000];
-        d = new int[2000];
-        r = new int[2000];
-        x = new int[2000];
-        y = new int[2000];
-        B = new long[2000];
+        acdr = new long[2000][4];
+        requestedNumbers = new long[1000][4];
+        x = new long[2000];
+        y = new long[2000];
+        B = new double[2000];
+        bankVerificationKey = 7;
+        n = 143;
         ID = 851212;
-        used = new int[2000];
-        n = 15;
-
     }
 
-    public long[] generateNumber() {
-        for (int i = 0; i < a.length; i++) {
-            a[i] = rand.nextInt();
-            c[i] = rand.nextInt();
-            d[i] = rand.nextInt();
-            r[i] = rand.nextInt();
+
+    public double[] generateMatrixes() {
+        long tmp;
+        for (int i = 0; i < acdr.length; i++) { //2000
+            for (int j = 0; j < acdr[1].length; j++) { //4
+                tmp = rand.nextInt(10) + 1;
+                acdr[i][j] = tmp % n;
+            }
         }
-        hashH();
-        hashB();
+
+        fillXY();
+        fillB();
+
         return B;
     }
 
-    public int[][] returnRequestedLists(int[] bReq) {
-        for (int i = 0; i < bReq.length; i++) {
-            used[bReq[i]] = 1;
+    private void fillB() {
+        for (int i = 0; i < B.length; i++) {
+            double pow = Math.pow(acdr[i][3], bankVerificationKey);
+            long hash = hashCodeF(x[i], y[i]);
+            B[i] = (pow * hash) % n;
         }
-        int[][] list = new int[1000][4];
-        for (int i = 0; i < bReq.length; i++) {
-            list[i][0] = a[bReq[i]];
-            list[i][1] = c[bReq[i]];
-            list[i][2] = d[bReq[i]];
-            list[i][3] = r[bReq[i]];
-        }
-        return list;
     }
 
-    public double recievedCoin(double bankCoin) {
-        double resR = 1;
-        for (int i = 0; i < used.length; i++) {
-            if (used[i] == 0) {
-                resR = resR * r[i];
+    private void fillXY() {
+        for (int i = 0; i < x.length; i++) {
+            x[i] = hashCodeH(acdr[i][0], acdr[i][1]); //a and c
+            y[i] = hashCodeH(acdr[i][0] ^ ID, acdr[i][2]); //a XOR ID and d
+        }
+    }
+
+
+    public long[][] requestRandomNumbersFrom(int[] indicies) {
+        selected = indicies;
+        int location = 0;
+        for (int i = 0; i < selected.length; i++) {
+            if (selected[i] == 1) {
+                requestedNumbers[location][0] = acdr[i][0];
+                requestedNumbers[location][1] = acdr[i][1];
+                requestedNumbers[location][2] = acdr[i][2];
+                requestedNumbers[location][3] = acdr[i][3];
+                location++;
             }
         }
-        double finalCoin = (bankCoin / resR) % n;
+        return requestedNumbers;
+    }
+
+    public long retrieveCoin(long bankCoin) {
+        long resR = 1;
+        for (int i = 0; i < selected.length; i++) {
+            if (selected[i] == 0) {
+                resR = ((resR * acdr[i][3])%n);
+            }
+
+        }
+
+        long finalCoin = (bankCoin / resR);
 
         return finalCoin;
     }
 
-    private void hashH() {
-        for (int i = 0; i < a.length; i++) {
-            x[i] = hashCodeH(a[i], c[i]);
-            y[i] = hashCodeH(a[i] ^ ID, d[i]);
-        }
-    }
-
-    private void hashB() {
-        for (int i = 0; i < B.length; i++) {
-            B[i] = ((int) Math.pow(r[i], 3) * hashCodeF(x[i], y[i])) % n;
-        }
-
-    }
-
-
-    private int hashCodeH(int a, int b) {
-        int hash = 3;
+    private long hashCodeH(long a, long b) {
+        long hash = 3;
         hash = hash * 5 + a;
         hash = hash * 5 + b;
         return hash;
     }
 
-    private int hashCodeF(int a, int b) {
-        int hash = 1;
+
+    private long hashCodeF(long a, long b) {
+        long hash = 1;
         hash = hash * 7 + a;
         hash = hash * 7 + b;
         return hash;
     }
-
-
 }

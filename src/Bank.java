@@ -2,91 +2,97 @@ import java.util.Random;
 
 public class Bank {
     private Random rand;
+    private int choosen;
     private int[] selected;
-    private int[] used;
-    private long[] B;
-    private int[] x;
-    private int[] y;
-    private int[] bCalc;
+    private int aliceID;
+    private int bankVerificationKey;
     private int n;
-    private int ID;
+    private double[] allB;
 
     public Bank() {
         rand = new Random();
-        selected = new int[1000];
-        B = new long[2000];
-        x = new int[1000];
-        y = new int[1000];
-        used = new int[2000];
-        bCalc = new int[1000];
-        n = 15;
-        ID = 851212;
+        selected = new int[2000];
+        aliceID = 851212;
+        bankVerificationKey = 7;
+        n = 143;
     }
 
 
-    public int[] selectNumbers(long[] Bnew) {
-        for (int i = 0; i < Bnew.length; i++) {
-            B[i] = Bnew[i];
-        }
-        for (int i = 0; i < selected.length; i++) {
-            int randomInt = rand.nextInt(2000);
-            while (used[randomInt] == 1) {
-                randomInt = rand.nextInt(2000);
+    public int[] chooseIndicies(double[] allB) {
+        this.allB = allB;
+        for (int i = 0; i < 1000; i++) {
+            //get a new random place
+            choosen = rand.nextInt(2000);
+            //if indency has been chosen before, choose another
+            while (selected[choosen] == 1) {
+                choosen = rand.nextInt(2000);
             }
-            selected[i] = randomInt;
-            used[randomInt] = 1;
+            //choose it
+            selected[choosen] = 1;
         }
         return selected;
+
     }
 
+    public boolean checkIfOK(long[][] selectedNumbers) {
+        long[] x = new long[1000];
+        long[] y = new long[1000];
+        double[] B = new double[1000];
 
-    public boolean verifyList(int[][] bRes) {
-        hashH(bRes);
-        hashB(bRes);
-        for (int i = 0; i < selected.length; i++) {
-            if (bCalc[i] != B[selected[i]]) {
-                return false;
-            }
+        for (int i = 0; i < selectedNumbers.length; i++) {
+            x[i] = hashCodeH(selectedNumbers[i][0], selectedNumbers[i][1]); //a and c
+            y[i] = hashCodeH(selectedNumbers[i][0] ^ aliceID, selectedNumbers[i][2]); //a XOR ID and d
         }
 
+        for (int i = 0; i < B.length; i++) {
+            double pow = Math.pow(selectedNumbers[i][3], bankVerificationKey);
+            long hash = hashCodeF(x[i], y[i]);
+            B[i] = (pow * hash) % n;
+        }
+
+        //Check if the value in B corresponds with Alices B-values.
+        int index = 0;
+        for (int i = 0; i < selected.length; i++) {
+            if (selected[i] == 1) {
+                if (allB[i] != B[index]) {
+                    return false;
+                }
+                index++;
+            }
+        }
         return true;
     }
 
-    public double sendCoin() {
-        double resultedCoin = 1;
-        for (int i = 0; i < B.length; i++) {
-            if (used[i] == 0) {
-                resultedCoin = resultedCoin * (Math.pow(B[i], 1 / 3) % n);
+    public long computeCoin() {
+        long resultedCoin = 1;
+        int inverse = 103;//findInverseOf(bankVerificationKey);             // <-- fel!
+        for (int i = 0; i < 2000; i++) {
+            if (selected[i] == 0) {
+                long pow = (long) (Math.pow(allB[i], inverse) %n);
+                resultedCoin = resultedCoin * pow;
+                System.out.println(resultedCoin);
             }
         }
         return resultedCoin;
     }
 
-
-    private void hashH(int[][] bRes) {
-        for (int i = 0; i < x.length; i++) {
-            x[i] = hashCodeH(bRes[i][0], bRes[i][1]);
-            y[i] = hashCodeH(bRes[i][0] ^ ID, bRes[i][2]);
+    private int findInverseOf(int key) {
+        int temp = 1;
+        while (((key * temp) % n) != 1) {
+            temp++;
         }
+        return temp;
     }
 
-    private void hashB(int[][] bRes) {
-        for (int i = 0; i < bCalc.length; i++) {
-            bCalc[i] = ((int) Math.pow(bRes[i][3], 3) * hashCodeF(x[i], y[i])) % n;
-        }
-
-    }
-
-
-    private int hashCodeH(int a, int b) {
-        int hash = 3;
+    private long hashCodeH(long a, long b) {
+        long hash = 3;
         hash = hash * 5 + a;
         hash = hash * 5 + b;
         return hash;
     }
 
-    private int hashCodeF(int a, int b) {
-        int hash = 1;
+    private long hashCodeF(long a, long b) {
+        long hash = 1;
         hash = hash * 7 + a;
         hash = hash * 7 + b;
         return hash;
