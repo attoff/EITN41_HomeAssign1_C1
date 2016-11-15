@@ -10,17 +10,17 @@ public class Alice {
     private Random rand;
     private int n;
     private int ID;
-    private int bankVerificationKey;
+    private int bankPublicKey;
 
 
     public Alice() {
         rand = new Random();
-        acdr = new long[2000][4];
-        requestedNumbers = new long[1000][4];
-        x = new long[2000];
-        y = new long[2000];
-        B = new double[2000];
-        bankVerificationKey = 7;
+        acdr = new long[20][4];
+        requestedNumbers = new long[10][4];
+        x = new long[20];
+        y = new long[20];
+        B = new double[20];
+        bankPublicKey = 7;
         n = 143;
         ID = 851212;
     }
@@ -43,7 +43,7 @@ public class Alice {
 
     private void fillB() {
         for (int i = 0; i < B.length; i++) {
-            double pow = Math.pow(acdr[i][3], bankVerificationKey);
+            double pow = Math.pow(acdr[i][3], bankPublicKey);
             long hash = hashCodeF(x[i], y[i]);
             B[i] = (pow * hash) % n;
         }

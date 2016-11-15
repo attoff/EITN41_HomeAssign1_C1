@@ -1,3 +1,4 @@
+import java.math.BigInteger;
 import java.util.Random;
 
 public class Bank {
@@ -5,27 +6,27 @@ public class Bank {
     private int choosen;
     private int[] selected;
     private int aliceID;
-    private int bankVerificationKey;
+    private int publicKey;
     private int n;
     private double[] allB;
 
     public Bank() {
         rand = new Random();
-        selected = new int[2000];
+        selected = new int[20];
         aliceID = 851212;
-        bankVerificationKey = 7;
+        publicKey = 7;
         n = 143;
     }
 
 
     public int[] chooseIndicies(double[] allB) {
         this.allB = allB;
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             //get a new random place
-            choosen = rand.nextInt(2000);
+            choosen = rand.nextInt(20);
             //if indency has been chosen before, choose another
             while (selected[choosen] == 1) {
-                choosen = rand.nextInt(2000);
+                choosen = rand.nextInt(20);
             }
             //choose it
             selected[choosen] = 1;
@@ -35,9 +36,9 @@ public class Bank {
     }
 
     public boolean checkIfOK(long[][] selectedNumbers) {
-        long[] x = new long[1000];
-        long[] y = new long[1000];
-        double[] B = new double[1000];
+        long[] x = new long[10];
+        long[] y = new long[10];
+        double[] B = new double[10];
 
         for (int i = 0; i < selectedNumbers.length; i++) {
             x[i] = hashCodeH(selectedNumbers[i][0], selectedNumbers[i][1]); //a and c
@@ -45,7 +46,7 @@ public class Bank {
         }
 
         for (int i = 0; i < B.length; i++) {
-            double pow = Math.pow(selectedNumbers[i][3], bankVerificationKey);
+            double pow = Math.pow(selectedNumbers[i][3], publicKey);
             long hash = hashCodeF(x[i], y[i]);
             B[i] = (pow * hash) % n;
         }
@@ -65,10 +66,10 @@ public class Bank {
 
     public long computeCoin() {
         long resultedCoin = 1;
-        int inverse = 103;//findInverseOf(bankVerificationKey);             // <-- fel!
-        for (int i = 0; i < 2000; i++) {
+        int inverse = findInverseOf(publicKey);
+        for (int i = 0; i < 20; i++) {
             if (selected[i] == 0) {
-                long pow = (long) (Math.pow(allB[i], inverse) %n);
+                long pow = (long) (Math.pow(allB[i], inverse) % n);
                 resultedCoin = resultedCoin * pow;
                 System.out.println(resultedCoin);
             }
@@ -77,11 +78,11 @@ public class Bank {
     }
 
     private int findInverseOf(int key) {
-        int temp = 1;
-        while (((key * temp) % n) != 1) {
-            temp++;
-        }
-        return temp;
+        int returnvalue;
+        int totient = 120;
+        BigInteger temp = BigInteger.valueOf(key).modInverse(BigInteger.valueOf(totient));
+        returnvalue = temp.intValue();
+        return returnvalue;
     }
 
     private long hashCodeH(long a, long b) {
